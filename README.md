@@ -1,4 +1,4 @@
-# Atividade Didática: Integração com APIs
+# Atividade: Integração com APIs
 
 Este projeto é destinado aos alunos da unidade curricular **Interação com APIs**.
 
