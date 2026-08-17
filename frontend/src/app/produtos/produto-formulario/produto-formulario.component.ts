@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
@@ -21,6 +21,7 @@ export class ProdutoFormularioComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   protected carregando = false;
   protected mensagemErro = '';
@@ -54,7 +55,10 @@ export class ProdutoFormularioComponent implements OnInit {
     this.mensagemErro = '';
 
     this.produtoService.buscarPorId(this.editandoId)
-      .pipe(finalize(() => this.carregando = false))
+      .pipe(finalize(() => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
         next: (produto) => {
           this.produtoForm.patchValue({
@@ -82,11 +86,13 @@ export class ProdutoFormularioComponent implements OnInit {
 
     if (this.editandoId) {
       this.produtoService.atualizar(this.editandoId, produtoData)
-        .pipe(finalize(() => this.carregando = false))
+        .pipe(finalize(() => {
+          this.carregando = false;
+          this.cdr.markForCheck();
+        }))
         .subscribe({
           next: () => {
-            this.mensagemSucesso = 'Produto atualizado com sucesso!';
-            setTimeout(() => this.router.navigate(['/produtos']), 1500);
+            this.router.navigate(['/produtos']);
           },
           error: () => {
             this.mensagemErro = 'Erro ao atualizar o produto.';
@@ -94,11 +100,13 @@ export class ProdutoFormularioComponent implements OnInit {
         });
     } else {
       this.produtoService.cadastrar(produtoData)
-        .pipe(finalize(() => this.carregando = false))
+        .pipe(finalize(() => {
+          this.carregando = false;
+          this.cdr.markForCheck();
+        }))
         .subscribe({
           next: () => {
-            this.mensagemSucesso = 'Produto cadastrado com sucesso!';
-            setTimeout(() => this.router.navigate(['/produtos']), 1500);
+            this.router.navigate(['/produtos']);
           },
           error: () => {
             this.mensagemErro = 'Erro ao cadastrar o produto.';

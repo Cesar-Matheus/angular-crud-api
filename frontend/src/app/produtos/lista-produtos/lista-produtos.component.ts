@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 
@@ -18,6 +18,7 @@ import { ProdutoService } from '../produto.service';
 })
 export class ListaProdutosComponent {
   private readonly produtoService = inject(ProdutoService);
+  private readonly cdr = inject(ChangeDetectorRef);
 
   protected produtos: Produto[] = [];
   protected carregando = false;
@@ -34,7 +35,10 @@ export class ListaProdutosComponent {
     
     this.produtoService
       .listar()
-      .pipe(finalize(() => (this.carregando = false)))
+      .pipe(finalize(() => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
         next: (produtos) => {
           this.produtos = produtos;
@@ -53,7 +57,10 @@ export class ListaProdutosComponent {
     this.mensagemSucesso = '';
 
     this.produtoService.excluir(id)
-      .pipe(finalize(() => this.carregando = false))
+      .pipe(finalize(() => {
+        this.carregando = false;
+        this.cdr.markForCheck();
+      }))
       .subscribe({
         next: () => {
           this.mensagemSucesso = 'Produto excluído com sucesso!';
