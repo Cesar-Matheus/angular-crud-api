@@ -342,3 +342,15 @@ Antes de enviar, verifique se:
 * As alterações foram enviadas para o GitHub.
 
 Bom trabalho!
+
+## Integração implementada
+
+Os métodos do `ProdutoService` foram conectados às rotas reais do back-end via `HttpClient`:
+
+- `listar()` → GET /api/products
+- `buscarPorId(id)` → GET /api/products/:id
+- `cadastrar(produto)` → POST /api/products
+- `atualizar(id, produto)` → PUT /api/products/:id
+- `excluir(id)` → DELETE /api/products/:id
+
+Todas as rotas foram validadas via Postman antes da integração com o front-end.
